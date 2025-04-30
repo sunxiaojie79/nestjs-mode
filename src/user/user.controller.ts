@@ -1,10 +1,8 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Logger, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
-// import { ConfigEnum } from 'src/enum/config.enum';
 import { User } from './user.entity';
 import { Logs } from 'src/logs/logs.entity';
-import { Logger } from 'nestjs-pino';
 @Controller('user')
 export class UserController {
   constructor(
@@ -12,18 +10,12 @@ export class UserController {
     private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
-    // this.logger.log(UserController.name);
+    this.logger.warn(UserController.name);
   }
 
   @Get()
   getUsers(): any {
-    // const db = this.configService.get(ConfigEnum.DB_TYPE);
-    // const dbHost = this.configService.get(ConfigEnum.DB_HOST);
-    // const dbPort = this.configService.get(ConfigEnum.DB_PORT);
-    // this.logger.log(`🚀 ~ UserController ~ getUsers ~ `);
-    // const db = this.configService.get('db');
-    // console.log('🚀 ~ UserController ~ getUsers ~ db:', db);
-    // return this.userService.getUsers();
+    this.logger.log('🚀 ~ UserController ~ getUsers ~ db:');
     return this.userService.findAll();
   }
 

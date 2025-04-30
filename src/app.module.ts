@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, Global } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 // import configuration from './configuration';
@@ -10,9 +10,9 @@ import { Profile } from './user/profile.entity';
 import { Logs } from './logs/logs.entity';
 import { Roles } from './roles/roles.entity';
 import * as Joi from 'joi';
-import { LoggerModule } from 'nestjs-pino';
-import { join } from 'path';
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
+
+@Global()
 @Module({
   imports: [
     UserModule,
@@ -52,42 +52,9 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
           logging: false,
         }) as TypeOrmModuleOptions,
     }),
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'root',
-    //   password: 'example',
-    //   database: 'testdb',
-    //   entities: [],
-    //   synchronize: true,
-    //   logging: ['error'],
-    // }),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        transport: {
-          targets: [
-            process.env.NODE_ENV === 'development'
-              ? {
-                  level: 'info',
-                  target: 'pino-pretty',
-                  options: { colorize: true },
-                }
-              : {
-                  level: 'info',
-                  target: 'pino-roll',
-                  options: {
-                    file: join('logs', 'log.txt'),
-                    frequency: 'daily',
-                    mkdir: true,
-                  },
-                },
-          ],
-        },
-      },
-    }),
   ],
   controllers: [],
-  providers: [],
+  providers: [Logger],
+  exports: [Logger],
 })
 export class AppModule {}
