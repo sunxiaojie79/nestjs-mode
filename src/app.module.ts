@@ -10,6 +10,8 @@ import { Profile } from './user/profile.entity';
 import { Logs } from './logs/logs.entity';
 import { Roles } from './roles/roles.entity';
 import * as Joi from 'joi';
+import { LoggerModule } from 'nestjs-pino';
+import { join } from 'path';
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 @Module({
   imports: [
@@ -46,7 +48,8 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
           database: configService.get(ConfigEnum.DB_DATABASE),
           entities: [User, Profile, Logs, Roles],
           synchronize: configService.get(ConfigEnum.DB_SYNC),
-          logging: process.env.NODE_ENV === 'development',
+          // logging: process.env.NODE_ENV === 'development',
+          logging: false,
         }) as TypeOrmModuleOptions,
     }),
     // TypeOrmModule.forRoot({
@@ -60,6 +63,29 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     //   synchronize: true,
     //   logging: ['error'],
     // }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          targets: [
+            process.env.NODE_ENV === 'development'
+              ? {
+                  level: 'info',
+                  target: 'pino-pretty',
+                  options: { colorize: true },
+                }
+              : {
+                  level: 'info',
+                  target: 'pino-roll',
+                  options: {
+                    file: join('logs', 'log.txt'),
+                    frequency: 'daily',
+                    mkdir: true,
+                  },
+                },
+          ],
+        },
+      },
+    }),
   ],
   controllers: [],
   providers: [],

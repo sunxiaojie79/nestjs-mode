@@ -54,16 +54,16 @@ export class UserService {
 
   async findLogsByGroup(id: number) {
     // SELECT logs.result as result, COUNT(logs.result) as count FROM logs, user WHERE user.id = logs.userID AND user.id = 1 GROUP BY logs.result
-    // const logs = await this.logsRepository
-    //   .createQueryBuilder('logs')
-    //   .select('logs.result', 'result')
-    //   .addSelect('COUNT("logs.result")', 'count')
-    //   .leftJoinAndSelect('logs.user', 'user')
-    //   .where('user.id = :id', { id })
-    //   .groupBy('result')
-    //   .orderBy('result', 'DESC')
-    //   .getRawMany();
-    const logs = await this.logsRepository.query(`SELECT * From logs`);
+    const logs = await this.logsRepository
+      .createQueryBuilder('logs')
+      .select('logs.result', 'result')
+      .addSelect('COUNT("logs.result")', 'count')
+      .leftJoinAndSelect('logs.user', 'user')
+      .where('user.id = :id', { id })
+      .groupBy('result')
+      .orderBy('result', 'DESC')
+      .getRawMany();
+    // const logs = await this.logsRepository.query(`SELECT * From logs`);
     return logs;
   }
 }
