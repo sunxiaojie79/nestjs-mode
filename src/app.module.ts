@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LogsModule } from './logs/logs.module';
 import * as Joi from 'joi';
-import ormConfig from '../ormconfig';
+import { connectionParams } from '../ormconfig';
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Global()
@@ -32,7 +32,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
         DB_SYNC: Joi.boolean().default(false),
       }),
     }),
-    TypeOrmModule.forRoot(ormConfig),
+    TypeOrmModule.forRoot(connectionParams),
     // TypeOrmModule.forRootAsync({
     //   imports: [ConfigModule],
     //   inject: [ConfigService],

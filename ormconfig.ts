@@ -3,8 +3,8 @@ import { User } from './src/user/user.entity';
 import { Profile } from './src/user/profile.entity';
 import { Logs } from './src/logs/logs.entity';
 import { Roles } from './src/roles/roles.entity';
-
-export default {
+import { DataSource, DataSourceOptions } from 'typeorm';
+export const connectionParams = {
   type: 'mysql',
   host: '127.0.0.1',
   port: 3306,
@@ -16,3 +16,9 @@ export default {
   // logging: process.env.NODE_ENV === 'development',
   logging: false,
 } as TypeOrmModuleOptions;
+
+export default new DataSource({
+  ...connectionParams,
+  migrations: ['src/migrations/**'],
+  subscribers: [],
+} as DataSourceOptions);
