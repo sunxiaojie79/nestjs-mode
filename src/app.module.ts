@@ -1,16 +1,12 @@
 import { Logger, Module, Global } from '@nestjs/common';
 import { UserModule } from './user/user.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 // import configuration from './configuration';
 import * as dotenv from 'dotenv';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ConfigEnum } from './enum/config.enum';
-import { User } from './user/user.entity';
-import { Profile } from './user/profile.entity';
-import { Logs } from './logs/logs.entity';
-import { Roles } from './roles/roles.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { LogsModule } from './logs/logs.module';
 import * as Joi from 'joi';
+import ormConfig from '../ormconfig';
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Global()
@@ -36,23 +32,24 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
         DB_SYNC: Joi.boolean().default(false),
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) =>
-        ({
-          type: configService.get(ConfigEnum.DB_TYPE),
-          host: configService.get(ConfigEnum.DB_HOST),
-          port: configService.get(ConfigEnum.DB_PORT),
-          username: configService.get(ConfigEnum.DB_USERNAME),
-          password: configService.get(ConfigEnum.DB_PASSWORD),
-          database: configService.get(ConfigEnum.DB_DATABASE),
-          entities: [User, Profile, Logs, Roles],
-          synchronize: configService.get(ConfigEnum.DB_SYNC),
-          // logging: process.env.NODE_ENV === 'development',
-          logging: false,
-        }) as TypeOrmModuleOptions,
-    }),
+    TypeOrmModule.forRoot(ormConfig),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: async (configService: ConfigService) =>
+    //     ({
+    //       type: configService.get(ConfigEnum.DB_TYPE),
+    //       host: configService.get(ConfigEnum.DB_HOST),
+    //       port: configService.get(ConfigEnum.DB_PORT),
+    //       username: configService.get(ConfigEnum.DB_USERNAME),
+    //       password: configService.get(ConfigEnum.DB_PASSWORD),
+    //       database: configService.get(ConfigEnum.DB_DATABASE),
+    //       entities: [User, Profile, Logs, Roles],
+    //       synchronize: configService.get(ConfigEnum.DB_SYNC),
+    //       // logging: process.env.NODE_ENV === 'development',
+    //       logging: false,
+    //     }) as TypeOrmModuleOptions,
+    // }),
     LogsModule,
   ],
   controllers: [],
