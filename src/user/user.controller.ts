@@ -1,9 +1,22 @@
-import { Controller, Get, Post, Inject, LoggerService } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Inject,
+  LoggerService,
+  Param,
+  Body,
+  Patch,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { User } from './user.entity';
 import { Logs } from 'src/logs/logs.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { getUserDto } from './dto/get-user.dto';
+
 @Controller('user')
 export class UserController {
   constructor(
@@ -14,27 +27,39 @@ export class UserController {
   ) {
     this.logger.warn(UserController.name);
   }
+  @Get('/profile')
+  getUserProfile(@Query() query: any): Promise<User> {
+    return this.userService.findProfile(query.id);
+  }
+
+  @Get('/:id')
+  getUser(@Param('id') id: number): any {
+    // return this.userService.findById(id);
+  }
 
   @Get()
-  getUsers(): any {
-    this.logger.log('🚀 ~ UserController ~ getUsers ~ db:');
-    return this.userService.findAll();
+  getUsers(@Query() query: getUserDto): any {
+    console.log('🚀 ~ UserController ~ getUsers ~ query:', query);
+    // page, limit, condition(username, roles, gender), sort
+    return this.userService.findAll(query);
   }
 
   @Post()
-  addUser(): any {
-    const user = {
-      username: 'test',
-      password: '123456',
-    } as User;
+  addUser(@Body() user: User): any {
     return this.userService.create(user);
   }
 
-  @Get('/profile')
-  getUserProfile(): Promise<User> {
-    return this.userService.findProfile(1);
+  @Patch('/:id')
+  updateUser(@Param('id') id: number, @Body() user: User): any {
+    return this.userService.update(id, user);
   }
 
+  @Delete('/:id')
+  deleteUser(@Param('id') id: number): any {
+    // return this.userService.delete(id);
+  }
+
+  // todo logs module
   @Get('/logs')
   getUserLogs(): Promise<Logs[]> {
     return this.userService.findUserLogs(1);

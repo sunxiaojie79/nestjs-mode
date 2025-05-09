@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Logs } from 'src/logs/logs.entity';
+import { getUserDto } from './dto/get-user.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -12,7 +13,11 @@ export class UserService {
     private readonly logsRepository: Repository<Logs>,
   ) {}
 
-  findAll(): Promise<User[]> {
+  findAll(query: getUserDto): Promise<User[]> {
+    // SELECT * FROM user u, profile p, roles r WHERE u.id = p.userID AND u.id = r.userID
+    // SELECT * FROM user u LEFT JOIN profile p ON u.id = p.userID LEFT JOIN roles r ON u.id = r.userID
+    // 分页 SQL -> LIMIT 10 OFFSET 0
+    // 排序 SQL -> ORDER BY username ASC
     return this.userRepository.find();
   }
 
