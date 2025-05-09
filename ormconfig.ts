@@ -30,8 +30,8 @@ function buildConnectionOptions() {
     database: config[ConfigEnum.DB_DATABASE],
     entities: entitiesDir,
     synchronize: true,
-    // logging: process.env.NODE_ENV === 'development',
-    logging: false,
+    logging: process.env.NODE_ENV === 'development',
+    // logging: false,
   } as TypeOrmModuleOptions;
 }
 export const connectionParams = buildConnectionOptions();

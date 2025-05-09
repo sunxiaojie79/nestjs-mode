@@ -18,7 +18,35 @@ export class UserService {
     // SELECT * FROM user u LEFT JOIN profile p ON u.id = p.userID LEFT JOIN roles r ON u.id = r.userID
     // 分页 SQL -> LIMIT 10 OFFSET 0
     // 排序 SQL -> ORDER BY username ASC
-    return this.userRepository.find();
+    const { page, limit, username, role, gender, sort } = query;
+    const take = limit || 10;
+    const skip = (page || 1 - 1) * take;
+
+    // const order = sort === 'asc' ? 'ASC' : 'DESC';
+    return this.userRepository.find({
+      select: {
+        id: true,
+        username: true,
+        profile: {
+          gender: true,
+        },
+      },
+      relations: {
+        profile: true,
+        roles: true,
+      },
+      where: {
+        username,
+        roles: {
+          id: role,
+        },
+        profile: {
+          gender,
+        },
+      },
+      skip,
+      take,
+    });
   }
 
   find(username: string): Promise<User> {

@@ -2,7 +2,7 @@ export interface getUserDto {
   page: number;
   limit?: number;
   username?: string;
-  roles?: string;
+  role?: number;
   gender?: string;
   sort?: string;
 }
