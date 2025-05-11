@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Logs } from 'src/logs/logs.entity';
 import { getUserDto } from './dto/get-user.dto';
+import { conditionUtils } from 'src/utils/db.helper';
 @Injectable()
 export class UserService {
   constructor(
@@ -22,7 +23,7 @@ export class UserService {
     // find方法
     const { page, limit, username, role, gender, sort } = query;
     const take = limit || 10;
-    const skip = (page || 1 - 1) * take;
+    const skip = ((page || 1) - 1) * take;
     console.log('🚀 ~ UserService ~ findAll ~ skip:', skip, take);
     const order = sort === 'asc' ? 'ASC' : 'DESC';
     // return this.userRepository.find({
@@ -51,26 +52,17 @@ export class UserService {
     // });
 
     // 使用 createQueryBuilder 方法
+    const obj = {
+      'user.username': username,
+      'roles.id': role,
+      'profile.gender': gender,
+    };
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('user.roles', 'roles');
-    if (username) {
-      queryBuilder.where('user.username = :username', { username });
-    } else {
-      queryBuilder.where('user.username IS NOT NULL');
-    }
-    if (role) {
-      queryBuilder.andWhere('roles.id = :role', { role });
-    } else {
-      queryBuilder.andWhere('roles.id IS NOT NULL');
-    }
-    if (gender) {
-      queryBuilder.andWhere('profile.gender = :gender', { gender });
-    } else {
-      queryBuilder.andWhere('profile.gender IS NOT NULL');
-    }
-    return queryBuilder
+    const newQueryBuilder = conditionUtils(queryBuilder, obj);
+    return newQueryBuilder
       .orderBy('user.username', order)
       .skip(skip)
       .take(take)
