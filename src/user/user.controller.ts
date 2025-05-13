@@ -9,6 +9,7 @@ import {
   Patch,
   Delete,
   Query,
+  UseFilters,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
@@ -16,8 +17,10 @@ import { User } from './user.entity';
 import { Logs } from 'src/logs/logs.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto/get-user.dto';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
 
 @Controller('user')
+@UseFilters(new TypeormFilter())
 export class UserController {
   constructor(
     private readonly userService: UserService,

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import * as requestIp from 'request-ip';
-
+import { QueryFailedError } from 'typeorm';
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   constructor(
@@ -27,7 +27,13 @@ export class AllExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const ip = requestIp.getClientIp(request);
-
+    let msg = exception['response'] || 'Internal Server Error';
+    if (exception instanceof QueryFailedError) {
+      msg = exception.message;
+      // if (exception.driverError.errno === 1062) {
+      //   msg = ' 唯一索引冲突';
+      // }
+    }
     const responseBody = {
       headers: request.headers,
       query: request.query,
@@ -36,7 +42,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       ip,
       exception: exception['name'],
-      error: exception['response'] || 'Internal Server Error',
+      error: msg,
     };
 
     this.logger.error(JSON.stringify(responseBody));
