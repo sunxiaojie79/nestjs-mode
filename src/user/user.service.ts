@@ -90,12 +90,17 @@ export class UserService {
     // }
   }
 
-  update(id: number, user: Partial<User>) {
-    return this.userRepository.update(id, user);
+  async update(id: number, user: Partial<User>) {
+    // 只适合单模型的更新，不适合有关系的模型更新
+    // return this.userRepository.update(id, user);
+    const userTmp = await this.findProfile(id);
+    const newUser = this.userRepository.merge(userTmp, user);
+    return this.userRepository.save(newUser);
   }
 
-  remove(id: number) {
-    return this.userRepository.delete(id);
+  async remove(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    return this.userRepository.remove(user);
   }
 
   findProfile(id: number) {

@@ -10,6 +10,8 @@ import {
   Delete,
   Query,
   UseFilters,
+  Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
@@ -30,6 +32,7 @@ export class UserController {
   ) {
     this.logger.warn(UserController.name);
   }
+
   @Get('/profile')
   getUserProfile(@Query() query: any): Promise<User> {
     return this.userService.findProfile(query.id);
@@ -37,7 +40,7 @@ export class UserController {
 
   @Get('/:id')
   getUser(@Param('id') id: number): any {
-    // return this.userService.findById(id);
+    return this.userService.findOne(id);
   }
 
   @Get()
@@ -53,13 +56,22 @@ export class UserController {
   }
 
   @Patch('/:id')
-  updateUser(@Param('id') id: number, @Body() user: User): any {
-    return this.userService.update(id, user);
+  updateUser(
+    @Param('id') id: number,
+    @Body() user: User,
+    @Headers('Authorization') headers: number,
+  ): any {
+    console.log('🚀 ~ UserController ~ updateUser ~ headers:', headers);
+    if (headers === id) {
+      return this.userService.update(id, user);
+    } else {
+      throw new UnauthorizedException('无权限');
+    }
   }
 
   @Delete('/:id')
-  deleteUser(@Param('id') id: number): any {
-    // return this.userService.delete(id);
+  removeUser(@Param('id') id: number): any {
+    return this.userService.remove(id);
   }
 
   // todo logs module
