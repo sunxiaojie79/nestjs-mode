@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LogsModule } from './logs/logs.module';
 import * as Joi from 'joi';
 import { connectionParams } from '../ormconfig';
+import { AuthModule } from './auth/auth.module';
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Global()
@@ -56,6 +57,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     //     }) as TypeOrmModuleOptions,
     // }),
     LogsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [Logger],
