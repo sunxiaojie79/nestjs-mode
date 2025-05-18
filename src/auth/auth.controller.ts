@@ -8,8 +8,12 @@ import { TypeormFilter } from 'src/filters/typeorm.filter';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('/signin')
-  signin(@Body() body: SigninUserDto) {
-    return this.authService.signin(body.username, body.password);
+  async signin(@Body() body: SigninUserDto) {
+    const { username, password } = body;
+    const token = await this.authService.signin(username, password);
+    return {
+      access_token: token,
+    };
   }
 
   @Post('/signup')

@@ -12,6 +12,8 @@ import {
   UseFilters,
   Headers,
   UnauthorizedException,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
@@ -20,6 +22,7 @@ import { Logs } from 'src/logs/logs.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto/get-user.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 @UseFilters(new TypeormFilter())
@@ -34,7 +37,11 @@ export class UserController {
   }
 
   @Get('/profile')
-  getUserProfile(@Query() query: any): Promise<User> {
+  @UseGuards(AuthGuard('jwt'))
+  getUserProfile(@Query() query: any, @Req() req): Promise<User> {
+    console.log('🚀 ~ UserController ~ getUserProfile ~ query:', query);
+    // req.user是通过AuthGuard('jwt')的validate方法返回的
+    console.log('🚀 ~ UserController ~ getUserProfile ~ req:', req.user);
     return this.userService.findProfile(query.id);
   }
 
