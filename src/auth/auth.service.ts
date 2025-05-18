@@ -12,10 +12,11 @@ export class AuthService {
     return user;
   }
 
-  signup(username: string, password: string) {
-    return {
+  async signup(username: string, password: string) {
+    const res = await this.userService.create({
       username,
       password,
-    };
+    });
+    return res;
   }
 }
