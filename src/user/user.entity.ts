@@ -12,7 +12,7 @@ import {
   AfterRemove,
 } from 'typeorm';
 import { Profile } from './profile.entity';
-
+import { Exclude } from 'class-transformer';
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
@@ -22,6 +22,7 @@ export class User {
   username: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @OneToMany(() => Logs, (logs) => logs.user)

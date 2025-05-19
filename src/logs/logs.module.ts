@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import { LogEnum } from '../enum/config.enum';
+import { LogsController } from './logs.controller';
 
 function createDailyRotateTransport(level: string, filename: string) {
   return new transports.DailyRotateFile({
@@ -50,5 +51,6 @@ function createDailyRotateTransport(level: string, filename: string) {
       },
     }),
   ],
+  controllers: [LogsController],
 })
 export class LogsModule {}
