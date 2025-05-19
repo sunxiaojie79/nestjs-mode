@@ -22,11 +22,12 @@ import { Logs } from 'src/logs/logs.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto/get-user.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
-import { AuthGuard } from '@nestjs/passport';
-import { AdminGuard } from 'src/guards/admin/admin.guard';
+import { AdminGuard } from 'src/guards/admin.guard';
+import { JwtGuard } from 'src/guards/jwt.guard';
 
 @Controller('user')
 @UseFilters(new TypeormFilter())
+@UseGuards(JwtGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -38,7 +39,6 @@ export class UserController {
   }
 
   @Get('/profile')
-  @UseGuards(AuthGuard('jwt'))
   getUserProfile(@Query() query: any, @Req() req): Promise<User> {
     console.log('🚀 ~ UserController ~ getUserProfile ~ query:', query);
     // req.user是通过AuthGuard('jwt')的validate方法返回的
@@ -54,7 +54,7 @@ export class UserController {
   @Get()
   // 1.装饰器执行顺序,从下往上执行
   // 2.是用UseGuards装饰器传递多个守卫，则从前向后执行，如果前面的守卫返回false，则后面的守卫不执行
-  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  @UseGuards(AdminGuard)
   getUsers(@Query() query: getUserDto): any {
     console.log('🚀 ~ UserController ~ getUsers ~ query:', query);
     // page, limit, condition(username, roles, gender), sort
