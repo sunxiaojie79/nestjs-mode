@@ -23,6 +23,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto/get-user.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from 'src/guards/admin/admin.guard';
 
 @Controller('user')
 @UseFilters(new TypeormFilter())
@@ -51,6 +52,9 @@ export class UserController {
   }
 
   @Get()
+  // 1.装饰器执行顺序,从下往上执行
+  // 2.是用UseGuards装饰器传递多个守卫，则从前向后执行，如果前面的守卫返回false，则后面的守卫不执行
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
   getUsers(@Query() query: getUserDto): any {
     console.log('🚀 ~ UserController ~ getUsers ~ query:', query);
     // page, limit, condition(username, roles, gender), sort

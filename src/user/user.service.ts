@@ -73,7 +73,10 @@ export class UserService {
   }
 
   find(username: string): Promise<User> {
-    return this.userRepository.findOne({ where: { username } });
+    return this.userRepository.findOne({
+      where: { username },
+      relations: ['roles'],
+    });
   }
 
   findOne(id: number): Promise<User> {
