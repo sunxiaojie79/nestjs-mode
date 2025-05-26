@@ -9,6 +9,7 @@ import * as Joi from 'joi';
 import { connectionParams } from '../ormconfig';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
+import { MenusModule } from './menus/menus.module';
 const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
 
 @Global()
@@ -60,6 +61,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'development'}`;
     LogsModule,
     AuthModule,
     RolesModule,
+    MenusModule,
   ],
   controllers: [],
   providers: [Logger],
